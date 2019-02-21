@@ -20,7 +20,7 @@ int main(void) {
         if(i % 2 == 0) {
             alice += a[i];
         } else {
-            bob += a[i]
+            bob += a[i];
         }
     }
     auto result = alice - bob;
