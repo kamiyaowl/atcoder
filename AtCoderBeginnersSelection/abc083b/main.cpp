@@ -10,7 +10,7 @@ int order_sum(int x) {
         if(tmp == 0) break;
         int dst = tmp % 10;
         sum += dst;
-        cout << "[DEBUB] " << dst << endl;
+        // cout << "[DEBUB] " << dst << endl;
     }
     return sum;
 }
@@ -24,7 +24,7 @@ int main(void){
     for(int i = 1 ; i <= n ; ++i) {
         int sum = order_sum(i);
         if (a <= sum && sum <= b) {
-            ans++;
+            ans += i;
         }
     }
     cout << ans << endl;
