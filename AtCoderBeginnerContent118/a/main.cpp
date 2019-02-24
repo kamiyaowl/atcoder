@@ -8,7 +8,7 @@ int main(void){
     if ((b % a) == 0) {
         cout << (a + b) << endl;
     } else {
-        cout << (a - b) << endl;
+        cout << (b - a) << endl;
     }
     return 0;
 }
