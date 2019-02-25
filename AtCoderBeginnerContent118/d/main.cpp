@@ -1,78 +1,74 @@
 #include <iostream>
 #include <vector>
 #include <tuple>
+#include <map>
 #include <algorithm>
 #include <boost/multiprecision/cpp_int.hpp>
 
 namespace mp = boost::multiprecision;
 using namespace std;
+// 使えるマッチ棒の数字 -> 作るのに必要な本数
+map<int, int> costs;
 
-// メモ化再帰。コード汚いのは許して
-vector<tuple<int, int>> costs;
-mp::uint1024_t temp_max = 0;
-int temp_order = 0;
-
-// count: 残り本数
-// current: 現在の数字
-// order: 桁数
-mp::uint1024_t calc_max(int count, mp::uint1024_t current, int order) {
-    if(count == 0) {
-        return current;
-    } else if(count < 0) {
-        return 0; // 失敗
+// n: 残り本数 -> ret: 最大の本数
+map<int, int> calc_order_memo{ {0, 1} };
+int calc_order(int n) {
+    if(calc_order_memo.count(n)) {
+        return calc_order_memo[n];
     } else {
+        // 本数を使い切らずに一番コストの低い数字を選択する
+        int max_dst_n = -1;
+        int max_result = -1;
+
         for(const auto& c: costs) {
-            auto num = get<0>(c);
-            auto cost = get<1>(c);
-            mp::uint1024_t next = (current * 10) + num; // 一番下の桁に挿入
-            auto result = calc_max(count - cost, next, order + 1);
-            if(temp_max < result) {
-                temp_max = result;
-                temp_order = order;
+            // cout << "[DEBUG] n=" << n << ", c=(" << c.first << ", " << c.second << ")" << endl;
+            // つくれないので失敗
+            if (c.second > n) {
+                continue; 
+            }
+            // 作れるので再帰する
+            auto dst_n = n - c.second;
+            auto result = calc_order(dst_n);
+            if(result > max_result) {
+                max_dst_n = dst_n;
+                max_result = result;
             }
         }
-        return temp_max; // 一番大きい値が返るはず
+        if (max_result == -1) {
+            return -1; // つくれない
+        } else {
+            calc_order_memo[n] = max_result + 1;
+            return max_result + 1; // 桁数を一個足して返す
+        }
     }
 }
 
-int main(void)
-{
-    mp::uint1024_t x;
-    vector<tuple<int, int>> costs_src;
-    costs_src.push_back(make_tuple(1, 2));
-    costs_src.push_back(make_tuple(2, 5));
-    costs_src.push_back(make_tuple(3, 5));
-    costs_src.push_back(make_tuple(4, 4));
-    costs_src.push_back(make_tuple(5, 5));
-    costs_src.push_back(make_tuple(6, 6));
-    costs_src.push_back(make_tuple(7, 3));
-    costs_src.push_back(make_tuple(8, 7));
-    costs_src.push_back(make_tuple(9, 6));
+int main(void) {
+    map<int, int> costs_src;
+    costs_src[1] = 2;
+    costs_src[2] = 5;
+    costs_src[3] = 5;
+    costs_src[4] = 4;
+    costs_src[5] = 5;
+    costs_src[6] = 6;
+    costs_src[7] = 3;
+    costs_src[8] = 7;
+    costs_src[9] = 6;
 
     int n, m;
     cin >> n; // マッチ本数
     cin >> m; // 使える数字の種類
-    vector<int> a(m);
-    for (int i = 0; i < m; ++i)
-    {
+    for (int i = 0; i < m; ++i) {
         int an;
         cin >> an;
-        a.push_back(an);
+        costs[an] = costs_src[an];
     }
-    // 使えない数字は刈っておく
-    copy_if(costs_src.begin(), costs_src.end(), back_inserter(costs), [a](tuple<int, int> t) {
-        return count_if(a.begin(), a.end(), [&](int x) {
-                   return get<0>(t) == x;
-               }) > 0;
-    });
-    sort(costs.begin(), costs.end(), [](tuple<int,int> t1, tuple<int,int> t2){ 
-        return get<1>(t2) !=  get<1>(t1) ? get<1>(t2) > get<1>(t1) : get<0>(t2) > get<0>(t1);
-    });
-    for(const auto& c: costs) {
-        cout << get<0>(c) << ", " << get<1>(c) << endl;
+    for (const auto &c : costs) {
+        cout << c.first << ", " << c.second << endl;
     }
-    auto result = calc_max(n, 0, 0);
-    cout << result << endl;
+    // 作れる最大の桁数を求める
+    int order = calc_order(n);
+    cout << order << endl;
 
     return 0;
 }
