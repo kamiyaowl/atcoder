@@ -10,15 +10,18 @@ using namespace std;
 // 使えるマッチ棒の数字 -> 作るのに必要な本数
 map<int, int> costs;
 
-// n: 残り本数 -> ret: 最大の本数
-map<int, int> calc_order_memo{ {0, 1} };
-int calc_order(int n) {
+// n: 残り本数 -> ret: (最大の本数, 使った数字履歴)
+map<int, int> calc_order_memo{ {0, 1} }; // n->桁数: 0本で使い切ったときは終了条件なので1本としておく
+map<int, mp::cpp_int> calc_num_memo{ {0, 0} }; // n->使った数字をメモしておきたい
+
+tuple<int, mp::cpp_int> calc_order(int n) {
     if(calc_order_memo.count(n)) {
-        return calc_order_memo[n];
+        return { calc_order_memo[n], calc_num_memo[n] };
     } else {
         // 本数を使い切らずに一番コストの低い数字を選択する
-        int max_dst_n = -1;
-        int max_result = -1;
+        int max_result = -1; // 帰ってきた桁数で最大の藻を
+        int select_n = -1; // max_result時にこのCall上で選んだ数字
+        mp::cpp_int max_num = -1; // 帰ってきた関数の具体的な数値
 
         for(const auto& c: costs) {
             // cout << "[DEBUG] n=" << n << ", c=(" << c.first << ", " << c.second << ")" << endl;
@@ -27,18 +30,22 @@ int calc_order(int n) {
                 continue; 
             }
             // 作れるので再帰する
-            auto dst_n = n - c.second;
-            auto result = calc_order(dst_n);
+            auto [result, num] = calc_order(dst_n);
+
             if(result > max_result) {
-                max_dst_n = dst_n;
                 max_result = result;
+                select_n = c.first;
+                max_num = num;
             }
         }
         if (max_result == -1) {
-            return -1; // つくれない
+            return { -1, 0 }; // つくれない
         } else {
-            calc_order_memo[n] = max_result + 1;
-            return max_result + 1; // 桁数を一個足して返す
+            calc_order_memo[n] = max_result + 1; // 桁数
+            calc_num_memo[n] = (max_num * 10) + selecT_n; // 使った数字+これまでの桁を足しておく
+            cout << "[DEBUG] ret {" << calc_order_memo[n] << ", " << calc_num_memo[n] << "}" << endl;
+
+            return { calc_order_memo[n], calc_num_memo[n] }; // 桁数を一個足して返す
         }
     }
 }
@@ -67,8 +74,8 @@ int main(void) {
         cout << c.first << ", " << c.second << endl;
     }
     // 作れる最大の桁数を求める
-    int order = calc_order(n);
-    cout << order << endl;
+    auto [order, num] = calc_order(n);
+    cout << "order: " << order << ", num:" << num << endl;
 
     return 0;
 }
