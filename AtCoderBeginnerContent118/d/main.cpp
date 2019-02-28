@@ -30,7 +30,9 @@ tuple<int, mp::cpp_int> calc_order(int n) {
                 continue; 
             }
             // 作れるので再帰する
-            auto [result, num] = calc_order(dst_n);
+            auto t = calc_order(select_n);
+            auto result = get<0>(t);
+            auto num = get<1>(t);
 
             if(result > max_result) {
                 max_result = result;
@@ -42,7 +44,7 @@ tuple<int, mp::cpp_int> calc_order(int n) {
             return { -1, 0 }; // つくれない
         } else {
             calc_order_memo[n] = max_result + 1; // 桁数
-            calc_num_memo[n] = (max_num * 10) + selecT_n; // 使った数字+これまでの桁を足しておく
+            calc_num_memo[n] = (max_num * 10) + select_n; // 使った数字+これまでの桁を足しておく
             cout << "[DEBUG] ret {" << calc_order_memo[n] << ", " << calc_num_memo[n] << "}" << endl;
 
             return { calc_order_memo[n], calc_num_memo[n] }; // 桁数を一個足して返す
@@ -74,7 +76,9 @@ int main(void) {
         cout << c.first << ", " << c.second << endl;
     }
     // 作れる最大の桁数を求める
-    auto [order, num] = calc_order(n);
+    auto r = calc_order(n);
+    auto order = get<0>(r);
+    auto num = get<1>(r);
     cout << "order: " << order << ", num:" << num << endl;
 
     return 0;
