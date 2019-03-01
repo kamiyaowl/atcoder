@@ -3,6 +3,7 @@
 #include <tuple>
 #include <map>
 #include <algorithm>
+#include <cmath>
 #include <boost/multiprecision/cpp_int.hpp>
 
 namespace mp = boost::multiprecision;
@@ -45,11 +46,17 @@ tuple<int, mp::cpp_int> calc_order(int n) {
         } else {
             calc_order_memo[n] = max_result + 1; // 桁数
             calc_num_memo[n] = (max_num * 10) + select_n; // 使った数字+これまでの桁を足しておく
-            cout << "[DEBUG] ret {" << calc_order_memo[n] << ", " << calc_num_memo[n] << "}" << endl;
+            // cout << "[DEBUG] ret {" << calc_order_memo[n] << ", " << calc_num_memo[n] << "}" << endl;
 
             return { calc_order_memo[n], calc_num_memo[n] }; // 桁数を一個足して返す
         }
     }
+}
+// 各桁の数字を並び替えて大きくする
+void sort_order(int order, mp::cpp_int src, std::string& str){
+    vector<int> arr(order);
+    str = src.str();
+    sort(str.begin(), str.end(), greater<char>());
 }
 
 int main(void) {
@@ -72,14 +79,32 @@ int main(void) {
         cin >> an;
         costs[an] = costs_src[an];
     }
-    for (const auto &c : costs) {
-        cout << c.first << ", " << c.second << endl;
+    // 先に同じコストの桁数であれば大きい方に間引いてしまう
+    for(int i = 1 ; i < 8 ; ++i) {
+        int x = -1;
+        for(int j = costs.size() - 1 ; j >= 0 ; --j) {
+            if(!costs.count(j)) continue;
+            else if(costs[j] == i) {
+                if (x != -1) {
+                    // cout << "[DEBUG] remove costs:" << j << endl;
+                    costs.erase(j);
+                } else {
+                    x = j;
+                }
+            }
+        }
     }
+    // for (const auto &c : costs) {
+    //     cout << c.first << ", " << c.second << endl;
+    // }
     // 作れる最大の桁数を求める
     auto r = calc_order(n);
     auto order = get<0>(r);
     auto num = get<1>(r);
-    cout << "order: " << order << ", num:" << num << endl;
+    // cout << "[DEBUG] order: " << order << ", num:" << num << endl;
 
+    string dst;
+    sort_order(order, num, dst);
+    cout << dst << endl;
     return 0;
 }
