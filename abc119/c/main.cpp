@@ -2,8 +2,8 @@
 #include <vector>
 #include <map>
 #include <set>
-#include <stdbool.h>
 #include <algorithm>
+#include <stdbool.h>
 
 using namespace std;
 
@@ -13,14 +13,10 @@ vector<int> takes;
 //
 // diff -> mp
 map<int,int> synth_memo { {0, 0} };
-map<int,map<int, bool>> synth_memo_select { {0, {}} };
+map<int, int> synth_memo_select { { 0, 0 } }; // bitmaskで管理する
 
-int synth(int diff, map<int, bool> select_takes) {
-    cout << "dbg: on synth(" << diff << ", ";
-    for(const auto& s: select_takes) {
-        cout << (s.second ? "1" : "0");
-    }
-    cout << ")" << endl;
+int synth(int diff, int select_takes) {
+    cout << "dbg: on synth(" << diff << ", " << select_takes << ")" << endl;
     if(synth_memo.count(diff)){
         cout << "\tdbg: call synth(0, ...)" << endl;
         return synth_memo[diff];
@@ -34,16 +30,14 @@ int synth(int diff, map<int, bool> select_takes) {
         // プラスの場合、竹を選ぶかMPで埋めるかどっちか(竹合成はMP10)
         int min_index = -1;
         int min_mp = INT_MAX;
-        bool is_initial = takes.size() == count_if(select_takes.begin(), select_takes.end(), [](pair<int,bool> p){ return !p.second; });
+        bool is_initial = select_takes == 0;
 
         int index = 0;
         for(const auto& t: takes) {
-            if (select_takes[index]) continue;
+            if (select_takes & (1 << index)) continue;
 
             int dst_diff = diff - t;
-            select_takes[index] = true;
-            auto mp = synth(dst_diff, select_takes);
-            select_takes[index] = false;
+            auto mp = synth(dst_diff, select_takes | (1 << index));
 
             // 2本目以降だとつなぐのに10MP
             if (!is_initial) {
@@ -66,10 +60,10 @@ int synth(int diff, map<int, bool> select_takes) {
         }
         // 一番良さげな選択を返す
         if(min_index != -1){
-            select_takes[min_index] = true;
+            select_takes |= (1 << min_index);
             synth_memo[diff] = min_mp;
             synth_memo_select[diff] = select_takes;
-            cout << "\tdbg: return sel. mp:" << synth_memo[diff] << ", select:" << min_index << endl;
+            cout << "\tdbg: return sel. mp:" << synth_memo[diff] << ", select:" << min_index << " select_takes:" << select_takes << endl;
             return synth_memo[diff];
         } else {
             // 失敗
@@ -87,15 +81,12 @@ int main(void) {
     cin >> targets[1];
     cin >> targets[2];
 
-    map<int, bool> selected;
     for(int i = 0 ; i < n ; ++i){
         int x;
         cin >> x;
         takes.push_back(x);
-
-        selected[i] = false;
     }
-    auto result = synth(targets[0], selected);
+    auto result = synth(targets[0], 0);
     cout << result << endl;
 
     return 0;
