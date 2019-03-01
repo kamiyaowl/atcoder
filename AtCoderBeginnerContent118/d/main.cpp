@@ -30,7 +30,7 @@ tuple<int, mp::cpp_int> calc_order(int n) {
                 continue; 
             }
             // 作れるので再帰する
-            auto t = calc_order(select_n);
+            auto t = calc_order(n - c.second);
             auto result = get<0>(t);
             auto num = get<1>(t);
 
