@@ -12,7 +12,13 @@ struct union_find {
         }
     }
     T root(T a) {
-        return (par[a] == a) ? a : root(par[a]);
+        // 再帰する過程でつなぎ直す
+        if(par[a] == a) return a;
+        else {
+            auto r = root(par[a]);
+            par[a] = r; // a-r間をすっ飛ばして根をつなぐ
+            return r;
+        }
     }
     void unite(T a, T b) {
         auto root_a = root(a);
