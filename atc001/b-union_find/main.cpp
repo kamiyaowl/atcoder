@@ -20,12 +20,31 @@ struct union_find {
             return r;
         }
     }
+    std::tuple<T, int> root_withrank(T a, int rank) {
+        // 再帰する過程でつなぎ直す
+        if(par[a] == a) return {a, rank};
+        else {
+            auto t = root_withrank(par[a], rank + 1);
+            auto dst_root = std::get<0>(t);
+            auto dst_rank = std::get<1>(t);
+            par[a] = dst_root; // a-r間をすっ飛ばして根をつなぐ
+            return {dst_root, dst_rank};
+        }
+    }
     void unite(T a, T b) {
-        auto root_a = root(a);
-        auto root_b = root(b);
+        auto tuple_a = root_withrank(a, 0);
+        auto tuple_b = root_withrank(b, 0);
+        auto root_a = std::get<0>(tuple_a);
+        auto root_b = std::get<0>(tuple_b);
+        auto rank_a = std::get<1>(tuple_a);
+        auto rank_b = std::get<1>(tuple_b);
         if (root_a != root_b) {
-            // bの集合をaにつける
-            par[root_b] = root_a;
+            if (rank_a < rank_b) {
+                // aのほうが短いので、bにつけてあげる
+                par[root_a] = root_b;
+            } else {
+                par[root_b] = root_a;
+            }
         }
     }
     bool is_same(T a, T b) {
