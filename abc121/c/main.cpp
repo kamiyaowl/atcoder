@@ -20,7 +20,7 @@ int main(void) {
     map<mp::cpp_int,mp::cpp_int> drinks; // price -> counts
 
     for(mp::cpp_int i = 0 ; i < n ; ++i) {
-        int a, b;
+        mp::cpp_int  a, b;
         cin >> a;
         cin >> b;
         drinks[a] = b;
@@ -39,6 +39,6 @@ int main(void) {
             break;
         }
     }
-    cout << sum << endl;
+    cout << sum.str() << endl;
     return 0;
 }
