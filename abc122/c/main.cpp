@@ -23,31 +23,28 @@ int main(void) {
 
     // 事前計算
     vector<int> ans(s.length() - 1);
+    int sum = 0;
+    vector<int> ans_sum(s.length()); // 何回出たか
     for(int i = 0 ; i < ans.size() ; ++i) {
+        ans_sum[i] = sum;
         if (s[i] == 'A' && s[i + 1] == 'C') {
             ans[i] = 1;
+            sum++;
         } else {
             ans[i] = 0;
         }
     } 
+    ans_sum[ans.size()] = sum; // 最後
 
-    map<tuple<int,int>, int> memo;
     for(int i = 0 ; i < q ; ++i) {
         int l,r;
         cin >> l;
         cin >> r;
 
-        int count = 0;
-        auto t = make_tuple(l,r);
-        if (memo.count(t)) {
-            cout << memo[t] << endl;
-        } else {
-            for(int j = l - 1 ; j < r - 1; ++j) {
-                count += ans[j];
-            }
-            memo[t] = count;
-            cout << count << endl;
-        }
+        int a = ans_sum[l - 1];
+        int b = ans_sum[r - 1];
+        auto count = b - a;
+        cout << count << endl;
     }
     return 0;
 }
