@@ -13,13 +13,23 @@
 namespace mp = boost::multiprecision;
 using namespace std;
 
-
 int main(void) {
     int n,q;
     cin >> n;
     cin >> q;
     string s;
     cin >> s;
+
+    // 事前計算
+    vector<int> ans(s.length() - 1);
+    for(int i = 0 ; i < ans.size() ; ++i) {
+        if (s[i] == 'A' && s[i + 1] == 'C') {
+            ans[i] = 1;
+        } else {
+            ans[i] = 0;
+        }
+    } 
+
     for(int i = 0 ; i < q ; ++i) {
         int l,r;
         cin >> l;
@@ -27,9 +37,7 @@ int main(void) {
 
         int count = 0;
         for(int j = l - 1 ; j < r - 1; ++j) {
-            if (s[j] == 'A' && s[j + 1] == 'C') {
-                count++;
-            }
+            count += ans[j];
         }
         cout << count << endl;
     }
