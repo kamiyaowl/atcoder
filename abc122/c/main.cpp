@@ -17,6 +17,7 @@ int main(void) {
     int n,q;
     cin >> n;
     cin >> q;
+
     string s;
     cin >> s;
 
@@ -30,16 +31,23 @@ int main(void) {
         }
     } 
 
+    map<tuple<int,int>, int> memo;
     for(int i = 0 ; i < q ; ++i) {
         int l,r;
         cin >> l;
         cin >> r;
 
         int count = 0;
-        for(int j = l - 1 ; j < r - 1; ++j) {
-            count += ans[j];
+        auto t = make_tuple(l,r);
+        if (memo.count(t)) {
+            cout << memo[t] << endl;
+        } else {
+            for(int j = l - 1 ; j < r - 1; ++j) {
+                count += ans[j];
+            }
+            memo[t] = count;
+            cout << count << endl;
         }
-        cout << count << endl;
     }
     return 0;
 }
