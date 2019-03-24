@@ -14,6 +14,12 @@ namespace mp = boost::multiprecision;
 using namespace std;
 
 
+bool validate(const string& src) {
+}
+
 int main(void) {
+    int n;
+    cin >> n;
+
     return 0;
 }
