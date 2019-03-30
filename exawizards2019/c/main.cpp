@@ -53,7 +53,7 @@ int main(void) {
                 }
             } else {
                 // 右からやる
-                for(int j = applies.size() - 1 ; j >= 0 ; --j) {
+                for(int j = applies[t].size() - 1 ; j >= 0 ; --j) {
                     auto target = applies[t][j];
                     if(target == n - 1) {
                         golems[target] = 0;
