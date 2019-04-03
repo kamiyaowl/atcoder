@@ -1,17 +1,5 @@
-10 15
-SNCZWRCEWB
-B R
-R R
-E R
-W R
-Z L
-S R
-Q L
-W L
-B R
+8 3
+AABCBDBA
 C L
-A L
-N L
-E R
-Z L
-S L
+B R
+A R

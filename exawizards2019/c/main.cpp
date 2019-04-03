@@ -14,6 +14,44 @@ namespace mp = boost::multiprecision;
 using namespace std;
 
 
+
+typedef enum Result {
+    Left,Right,Exists,
+};
+Result solve(const vector<pair<char, int>>& magics, const string& src, int index) {
+    for(const auto& magic: magics) {
+        if (src[index] == magic.first) {
+            index += magic.second;
+        }
+        if (index < 0) {
+            return Result::Left;
+        } else if(index >= src.length()) {
+            return Result::Right;
+        }
+    }
+    cout << "[DEBUG] index:" << index << endl; 
+    return Result::Exists;
+}
+int bin_search_left(const vector<pair<char, int>>& magics, const string& src) {
+    // 左からどこまで死んでるか求める
+    int begin = 0;
+    int end = src.length() - 1;
+    Result result;
+    while(begin != end) {
+        int target = (end - begin) / 2;
+        result = solve(magics, src, target);
+        if(result == Result::Left) {
+            if(begin == target) break;
+            // 答えはもっと右
+            begin = target;
+        } else {
+            if(end == target) break;
+            end = target;
+        }
+    }
+    // にぶたんで見つけられなかったら-1
+    return result == Result::Left ? begin : -1;
+}
 int main(void) {
     int n; // マスの総数
     int q; // 呪文の数
@@ -22,51 +60,15 @@ int main(void) {
     cin >> q;
     cin >> s;
 
-    vector<int> golems(n, 1); // 各マス1体で初期化
-    // 呪文の適用範囲をマップにする
-    vector<vector<int>> applies(26, vector<int>(0));
-    for(int i = 0 ; i < s.length(); ++i) {
-        char c = s[i];
-        applies[c - 'A'].push_back(i);
-    }
-
-    // 頭からやる
+    vector<pair<char, int>> magics(q);
     for(int i = 0 ; i < q ; ++i) {
         char t; // 適用するマス
         char d; // 方向 L or R
         cin >> t;
         cin >> d;
-        int index = t - 'A';
-        if (d == 'L') {
-            // 普通にやる
-            for(int j = 0 ; j < applies[index].size() ; ++j) {
-                auto target = applies[index][j];
-                if(target == 0) {
-                    golems[target] = 0;
-                } else {
-                    golems[target - 1] += golems[target];
-                    golems[target] = 0;
-                }
-            }
-        } else {
-            // 右からやる
-            for(int j = applies[index].size() - 1 ; j >= 0 ; --j) {
-                auto target = applies[index][j];
-                if(target == n - 1) {
-                    golems[target] = 0;
-                } else {
-                    golems[target + 1] += golems[target];
-                    golems[target] = 0;
-                }
-            }
-        }
+        magics.push_back(make_pair(t, d == 'L' ? -1 : 1));
     }
-
-    int sum = 0;
-    for(int i = 0 ; i < golems.size() ; ++i) {
-        sum += golems[i];
-    }
-    cout << sum << endl;
-
+    auto l = bin_search_left(magics, s);
+    cout << l << endl;
     return 0;
 }
