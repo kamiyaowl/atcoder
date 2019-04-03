@@ -29,28 +29,58 @@ Result solve(const vector<pair<char, int>>& magics, const string& src, int index
             return Result::Right;
         }
     }
-    cout << "[DEBUG] index:" << index << endl; 
+    // cout << "[DEBUG] index:" << index << endl; 
     return Result::Exists;
 }
 int bin_search_left(const vector<pair<char, int>>& magics, const string& src) {
     // 左からどこまで死んでるか求める
     int begin = 0;
     int end = src.length() - 1;
+    int old_target = -1;
     Result result;
+    int dst = -1;
     while(begin != end) {
-        int target = (end - begin) / 2;
+        int target = (end - begin) / 2 + begin;
+        if(old_target == target) break;
+        // cout << "L:" << begin << "," << end << "," << target << endl;
         result = solve(magics, src, target);
         if(result == Result::Left) {
-            if(begin == target) break;
+            dst = target;
             // 答えはもっと右
+            if(begin == target) break;
             begin = target;
         } else {
             if(end == target) break;
             end = target;
         }
+        old_target = target;
     }
     // にぶたんで見つけられなかったら-1
-    return result == Result::Left ? begin : -1;
+    return dst;
+}
+int bin_search_right(const vector<pair<char, int>>& magics, const string& src) {
+    int begin = 0;
+    int end = src.length() - 1;
+    int old_target = -1;
+    Result result;
+    int dst = -1;
+    while(begin != end) {
+        int target = (end - begin) / 2 + begin;
+        if(old_target == target) break;
+        // cout << "R:" << begin << "," << end << "," << target << endl;
+        result = solve(magics, src, target);
+        if(result == Result::Right) {
+            dst = target;
+            if(end == target) break;
+            end = target;
+        } else {
+            if(begin == target) break;
+            begin = target;
+        }
+        old_target = target;
+    }
+    // にぶたんで見つけられなかったら-1
+    return dst;
 }
 int main(void) {
     int n; // マスの総数
@@ -69,6 +99,12 @@ int main(void) {
         magics.push_back(make_pair(t, d == 'L' ? -1 : 1));
     }
     auto l = bin_search_left(magics, s);
-    cout << l << endl;
+    auto r = bin_search_right(magics, s);
+    int removed = (l + 1) + (r < 0 ? 0 : (s.length() - r));
+    int ans = s.length() - removed;
+    // cout << l << endl;
+    // cout << r << endl;
+    // cout << removed << endl;
+    cout << ans << endl;
     return 0;
 }
