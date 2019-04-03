@@ -41,7 +41,7 @@ int bin_search_left(const vector<pair<char, int>>& magics, const string& src) {
     int dst = -1;
     while(begin != end) {
         int target = (end - begin) / 2 + begin;
-        if(old_target == target) break;
+        if(old_target == target) target++;
         // cout << "L:" << begin << "," << end << "," << target << endl;
         result = solve(magics, src, target);
         if(result == Result::Left) {
@@ -66,7 +66,7 @@ int bin_search_right(const vector<pair<char, int>>& magics, const string& src) {
     int dst = -1;
     while(begin != end) {
         int target = (end - begin) / 2 + begin;
-        if(old_target == target) break;
+        if(old_target == target) target++;
         // cout << "R:" << begin << "," << end << "," << target << endl;
         result = solve(magics, src, target);
         if(result == Result::Right) {
