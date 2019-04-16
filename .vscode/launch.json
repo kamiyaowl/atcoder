@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(lldb) Launch with stdin(./input.txt)",
+            "name": "[rust] (lldb) Launch with stdin(./input.txt)",
             "type": "lldb",
             "request": "launch",
             "program": "${fileDirname}/a.out",
@@ -13,17 +13,40 @@
             "cwd": "${fileDirname}",
             "terminal": "integrated",
             "stdio": ["${fileDirname}/input.txt", null, null],
-            "preLaunchTask": "build before debug"
+            "sourceLanguages": [ "rust", ],
+            "preLaunchTask": "build rustc"
         },
         {
-            "name": "(lldb) Launch",
+            "name": "[rust] (lldb) Launch",
             "type": "lldb",
             "request": "launch",
             "program": "${fileDirname}/a.out",
             "args": [],
             "cwd": "${fileDirname}",
             "terminal": "integrated",
-            "preLaunchTask": "build before debug"
+            "sourceLanguages": [ "rust", ],
+            "preLaunchTask": "build rustc"
+        },
+        {
+            "name": "[c++] (lldb) Launch with stdin(./input.txt)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${fileDirname}/a.out",
+            "args": [],
+            "cwd": "${fileDirname}",
+            "terminal": "integrated",
+            "stdio": ["${fileDirname}/input.txt", null, null],
+            "preLaunchTask": "build clang++"
+        },
+        {
+            "name": "[c++] (lldb) Launch",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${fileDirname}/a.out",
+            "args": [],
+            "cwd": "${fileDirname}",
+            "terminal": "integrated",
+            "preLaunchTask": "build clang++"
         }
     ]
 }
