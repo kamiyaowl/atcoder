@@ -18,6 +18,8 @@ int main(void) {
     int n;
     string s; // '#' or '.'
     cin >> n >> s;
+    string s2(s);
+
     // 短い場合
     if (n == 1) {
         cout << 0 << endl;
@@ -29,28 +31,31 @@ int main(void) {
 
     // main
     int count = 0;
-    for(int i = 1 ; i < n ; ++i) {
-        auto before = s[i-1];
+    for(int i = 0 ; i < n ; ++i) {
+        auto before = (i > 0) ? s[i-1] : '.'; // 無害
         auto current = s[i];
         auto next =  (i < n - 1) ? s[i] : '#'; // 境界なので、最後は無害なので黒にしておく
         // 関係ない
         if (before != '#') continue;
         if (current != '.') continue;
         // 処置がいる
-        if (next == '#') {
-            // 右隣が黒なら色を変えても問題ない
-            s[i] = '#';
-            count++;
-        } else {
-            s[i-1] = '.';
-            count++;
-        }
+        s[i] = '#';
+        count++;
     }
-    // debug
-    cout << s << endl;
-
+    int count2 = 0;
+    for(int i = 0 ; i < n ; ++i) {
+        auto before = (i > 0) ? s2[i-1] : '.'; // 無害
+        auto current = s2[i];
+        auto next =  (i < n - 1) ? s2[i] : '#'; // 境界なので、最後は無害なので黒にしておく
+        // 関係ない
+        if (before != '#') continue;
+        if (current != '.') continue;
+        // 処置がいる
+        s2[i-1] = '.';
+        count2++;
+    }
     // result
-    cout << count << endl;
+    cout << min(count, count2) << endl;
 
     return 0;
 }
